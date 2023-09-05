@@ -9,42 +9,15 @@ class App extends Component {
     username: '',
     password: '',
     showPassword: false,
-  }
-
-  onSubmitInfo = event => {
-    event.preventDefault()
-    const {site, username, password} = this.state
-    const newInfo = {
-      id: v4(),
-      site: {site},
-      username: {username},
-      password: {password},
-    }
-    this.setState(prevState => ({
-      infoList: [...prevState.infoList, newInfo],
-      site: '',
-      username: '',
-      password: '',
-    }))
-  }
-
-  boxCheck = event => {
-    const {showPassword} = this.state
-    if (event.target.checked) {
-      this.setState((showPassword: true))
-    } else {
-      this.setState((showPassword: false))
-    }
-  }
-
-  deleteItem = id => {
-    const {infoList} = this.state
-    const newList = infoList.filter(eachValue => eachValue !== id)
-    this.setState({infoList: newList})
+    searchInput: '',
   }
 
   onSite = event => {
     this.setState({site: event.target.value})
+  }
+
+  onSearch = event => {
+    this.setState({searchInput: event.target.value})
   }
 
   onUsername = event => {
@@ -55,12 +28,49 @@ class App extends Component {
     this.setState({password: event.target.value})
   }
 
-  render() {
-    const {infoList, showPassword} = this.state
-    const {site, password, username} = infoList
-    const leng = infoList.length
-    const noElements = leng === 0
+  onSubmitInfo = event => {
+    event.preventDefault()
+    const {site, username, password} = this.state
+    const initial = site.slice(0, 1).toUpperCase()
+    const newInfo = {
+      id: v4(),
+      site,
+      username,
+      password,
+      initial,
+    }
+    this.setState(prevState => ({
+      infoList: [...prevState.infoList, newInfo],
+      site: '',
+      username: '',
+      password: '',
+      searchInput: '',
+    }))
+  }
 
+  boxCheck = event => {
+    if (event.target.checked) {
+      this.setState({showPassword: true})
+    } else {
+      this.setState({showPassword: false})
+    }
+  }
+
+  deleteItem = id => {
+    const {infoList} = this.state
+    const newList = infoList.filter(eachValue => eachValue.id !== id)
+    this.setState({infoList: newList})
+  }
+
+  render() {
+    const {infoList, showPassword, searchInput} = this.state
+    const {site, password, username} = infoList
+
+    const newList = infoList.filter(eachValue =>
+      eachValue.site.toLowerCase().includes(searchInput.toLowerCase()),
+    )
+    const leng = newList.length
+    const noElements = leng === 0
     console.log(infoList)
     return (
       <div className="initial-container ">
@@ -151,6 +161,8 @@ class App extends Component {
                       className="input"
                       placeholder="Search"
                       id="search"
+                      value={searchInput}
+                      onChange={this.onSearch}
                     />
                   </div>
                 </div>
@@ -173,7 +185,7 @@ class App extends Component {
               )}
               {!noElements && (
                 <ul className="unordered-list">
-                  {infoList.map(eachValue => (
+                  {newList.map(eachValue => (
                     <li
                       className="a-info-box"
                       key={eachValue.id}
@@ -181,7 +193,7 @@ class App extends Component {
                     >
                       <div className="b-info-box">
                         <div className="left-info-box">
-                          <p>a</p>
+                          <p>{eachValue.initial}</p>
                           <div>
                             <p>{eachValue.site}</p>
                             <p>{eachValue.username}</p>
