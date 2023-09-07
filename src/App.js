@@ -210,7 +210,7 @@ class App extends Component {
                         </div>
                         <button
                           type="button"
-                          onClick={this.deleteItem(eachValue.id)}
+                          onClick={()=>this.deleteItem(eachValue.id)}
                         >
                           <img
                             className="delete"
